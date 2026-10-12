@@ -65,8 +65,8 @@ coding_assessment_bank/
 **1. Clone the repo**
 
 ```bash
-git clone https://github.com/your-username/coding-assessment-bank.git
-cd coding-assessment-bank
+git clone https://github.com/Bitan-2125/Coding-Assessment-Question-Bank-Validator.git
+cd Coding-Assessment-Question-Bank-Validator
 ```
 
 **2. Create and activate a virtual environment**
