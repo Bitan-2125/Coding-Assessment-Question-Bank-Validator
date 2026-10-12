@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+*.o
+assessment.db
+.venv/
+reports/runs.db

@@ -1,0 +1,1645 @@
+{
+  "project": "Coding Assessment Question Bank & Validator",
+  "version": "1.0.0",
+  "count": 30,
+  "problems": [
+    {
+      "id": "DSA001",
+      "title": "Two Sum",
+      "category": "dsa",
+      "topic": "Arrays / Hashing",
+      "difficulty": "Easy",
+      "statement": "Return indices of two distinct elements whose values sum to target. Return [-1, -1] if no pair exists.",
+      "constraints": "2 <= len(nums) <= 100000; values and target fit signed 32-bit integers.",
+      "examples": {
+        "input": {
+          "nums": [
+            2,
+            7,
+            11,
+            15
+          ],
+          "target": 9
+        },
+        "output": [
+          0,
+          1
+        ]
+      },
+      "test_cases": [
+        {
+          "args": [
+            [
+              2,
+              7,
+              11,
+              15
+            ],
+            9
+          ],
+          "expected": [
+            0,
+            1
+          ]
+        },
+        {
+          "args": [
+            [
+              3,
+              3
+            ],
+            6
+          ],
+          "expected": [
+            0,
+            1
+          ]
+        },
+        {
+          "args": [
+            [
+              1,
+              2,
+              3
+            ],
+            7
+          ],
+          "expected": [
+            -1,
+            -1
+          ]
+        },
+        {
+          "args": [
+            [
+              -3,
+              4,
+              3,
+              90
+            ],
+            0
+          ],
+          "expected": [
+            0,
+            2
+          ]
+        }
+      ],
+      "reference_solution": "two_sum",
+      "complexity": "O(n) time, O(n) space",
+      "common_mistakes": "Using the same element twice; returning values instead of indices; failing with duplicate values."
+    },
+    {
+      "id": "DSA002",
+      "title": "Valid Anagram",
+      "category": "dsa",
+      "topic": "Strings / Hashing",
+      "difficulty": "Easy",
+      "statement": "Return true if two strings contain exactly the same characters with the same frequencies.",
+      "constraints": "Strings contain lowercase English letters; lengths up to 200000.",
+      "examples": {
+        "input": {
+          "s": "listen",
+          "t": "silent"
+        },
+        "output": true
+      },
+      "test_cases": [
+        {
+          "args": [
+            "listen",
+            "silent"
+          ],
+          "expected": true
+        },
+        {
+          "args": [
+            "rat",
+            "car"
+          ],
+          "expected": false
+        },
+        {
+          "args": [
+            "a",
+            "aa"
+          ],
+          "expected": false
+        },
+        {
+          "args": [
+            "",
+            ""
+          ],
+          "expected": true
+        }
+      ],
+      "reference_solution": "is_anagram",
+      "complexity": "O(n) time, O(1) auxiliary space for fixed alphabet",
+      "common_mistakes": "Checking only set equality; ignoring character counts; not checking length."
+    },
+    {
+      "id": "DSA003",
+      "title": "First Non-Repeating Character",
+      "category": "dsa",
+      "topic": "Strings / Hashing",
+      "difficulty": "Easy",
+      "statement": "Return the index of the first character that occurs exactly once, or -1 if none exists.",
+      "constraints": "String length up to 200000; lowercase English letters.",
+      "examples": {
+        "input": {
+          "s": "leetcode"
+        },
+        "output": 0
+      },
+      "test_cases": [
+        {
+          "args": [
+            "leetcode"
+          ],
+          "expected": 0
+        },
+        {
+          "args": [
+            "aabb"
+          ],
+          "expected": -1
+        },
+        {
+          "args": [
+            "loveleetcode"
+          ],
+          "expected": 2
+        },
+        {
+          "args": [
+            "z"
+          ],
+          "expected": 0
+        }
+      ],
+      "reference_solution": "first_unique_char",
+      "complexity": "O(n) time, O(1) space for fixed alphabet",
+      "common_mistakes": "Returning the character rather than its index; returning the first character without counting all occurrences."
+    },
+    {
+      "id": "DSA004",
+      "title": "Move Zeroes",
+      "category": "dsa",
+      "topic": "Arrays / Two Pointers",
+      "difficulty": "Easy",
+      "statement": "Move all zeroes to the end while preserving the relative order of non-zero elements. Modify and return the array.",
+      "constraints": "0 <= len(nums) <= 200000.",
+      "examples": {
+        "input": {
+          "nums": [
+            0,
+            1,
+            0,
+            3,
+            12
+          ]
+        },
+        "output": [
+          1,
+          3,
+          12,
+          0,
+          0
+        ]
+      },
+      "test_cases": [
+        {
+          "args": [
+            [
+              0,
+              1,
+              0,
+              3,
+              12
+            ]
+          ],
+          "expected": [
+            1,
+            3,
+            12,
+            0,
+            0
+          ]
+        },
+        {
+          "args": [
+            [
+              0,
+              0
+            ]
+          ],
+          "expected": [
+            0,
+            0
+          ]
+        },
+        {
+          "args": [
+            [
+              1,
+              2,
+              3
+            ]
+          ],
+          "expected": [
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "args": [
+            []
+          ],
+          "expected": []
+        }
+      ],
+      "reference_solution": "move_zeroes",
+      "complexity": "O(n) time, O(1) extra space",
+      "common_mistakes": "Sorting the array; changing the order of non-zero elements; allocating unnecessary arrays when in-place behavior is required."
+    },
+    {
+      "id": "DSA005",
+      "title": "Binary Search",
+      "category": "dsa",
+      "topic": "Binary Search",
+      "difficulty": "Easy",
+      "statement": "Return the index of target in a sorted ascending array, or -1 if absent.",
+      "constraints": "Array length up to 1000000; values may repeat; return any matching index.",
+      "examples": {
+        "input": {
+          "nums": [
+            -1,
+            0,
+            3,
+            5,
+            9,
+            12
+          ],
+          "target": 9
+        },
+        "output": 4
+      },
+      "test_cases": [
+        {
+          "args": [
+            [
+              -1,
+              0,
+              3,
+              5,
+              9,
+              12
+            ],
+            9
+          ],
+          "expected": 4
+        },
+        {
+          "args": [
+            [
+              -1,
+              0,
+              3,
+              5,
+              9,
+              12
+            ],
+            2
+          ],
+          "expected": -1
+        },
+        {
+          "args": [
+            [
+              4
+            ],
+            4
+          ],
+          "expected": 0
+        },
+        {
+          "args": [
+            [],
+            5
+          ],
+          "expected": -1
+        }
+      ],
+      "reference_solution": "binary_search",
+      "complexity": "O(log n) time, O(1) space",
+      "common_mistakes": "Using an incorrect loop condition; forgetting absent targets; computing midpoint as (left+right) in fixed-width languages."
+    },
+    {
+      "id": "DSA006",
+      "title": "Merge Sorted Arrays",
+      "category": "dsa",
+      "topic": "Arrays / Two Pointers",
+      "difficulty": "Easy",
+      "statement": "Return a sorted array containing all elements from two sorted arrays.",
+      "constraints": "Each array length up to 100000.",
+      "examples": {
+        "input": {
+          "a": [
+            1,
+            3,
+            5
+          ],
+          "b": [
+            2,
+            4,
+            6
+          ]
+        },
+        "output": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ]
+      },
+      "test_cases": [
+        {
+          "args": [
+            [
+              1,
+              3,
+              5
+            ],
+            [
+              2,
+              4,
+              6
+            ]
+          ],
+          "expected": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ]
+        },
+        {
+          "args": [
+            [],
+            [
+              1
+            ]
+          ],
+          "expected": [
+            1
+          ]
+        },
+        {
+          "args": [
+            [
+              1,
+              1
+            ],
+            [
+              1,
+              2
+            ]
+          ],
+          "expected": [
+            1,
+            1,
+            1,
+            2
+          ]
+        },
+        {
+          "args": [
+            [
+              -2,
+              0
+            ],
+            [
+              -1,
+              3
+            ]
+          ],
+          "expected": [
+            -2,
+            -1,
+            0,
+            3
+          ]
+        }
+      ],
+      "reference_solution": "merge_sorted",
+      "complexity": "O(n+m) time, O(n+m) output space",
+      "common_mistakes": "Appending remaining tail incorrectly; assuming unique values; using repeated sorting instead of linear merge."
+    },
+    {
+      "id": "DSA007",
+      "title": "Maximum Subarray Sum",
+      "category": "dsa",
+      "topic": "Arrays / Kadane",
+      "difficulty": "Medium",
+      "statement": "Return the maximum sum of any non-empty contiguous subarray.",
+      "constraints": "1 <= len(nums) <= 200000; values can be negative.",
+      "examples": {
+        "input": {
+          "nums": [
+            -2,
+            1,
+            -3,
+            4,
+            -1,
+            2,
+            1,
+            -5,
+            4
+          ]
+        },
+        "output": 6
+      },
+      "test_cases": [
+        {
+          "args": [
+            [
+              -2,
+              1,
+              -3,
+              4,
+              -1,
+              2,
+              1,
+              -5,
+              4
+            ]
+          ],
+          "expected": 6
+        },
+        {
+          "args": [
+            [
+              -5,
+              -2,
+              -9
+            ]
+          ],
+          "expected": -2
+        },
+        {
+          "args": [
+            [
+              4
+            ]
+          ],
+          "expected": 4
+        },
+        {
+          "args": [
+            [
+              1,
+              2,
+              3
+            ]
+          ],
+          "expected": 6
+        }
+      ],
+      "reference_solution": "max_subarray",
+      "complexity": "O(n) time, O(1) space",
+      "common_mistakes": "Initializing best sum to zero, which fails when all values are negative; resetting the running sum at the wrong time."
+    },
+    {
+      "id": "DSA008",
+      "title": "Best Time to Buy and Sell Stock",
+      "category": "dsa",
+      "topic": "Arrays / Greedy",
+      "difficulty": "Easy",
+      "statement": "Given daily prices, return the maximum profit from one buy followed by one later sell. Return 0 if no profit is possible.",
+      "constraints": "1 <= len(prices) <= 200000; prices are non-negative.",
+      "examples": {
+        "input": {
+          "prices": [
+            7,
+            1,
+            5,
+            3,
+            6,
+            4
+          ]
+        },
+        "output": 5
+      },
+      "test_cases": [
+        {
+          "args": [
+            [
+              7,
+              1,
+              5,
+              3,
+              6,
+              4
+            ]
+          ],
+          "expected": 5
+        },
+        {
+          "args": [
+            [
+              7,
+              6,
+              4,
+              3,
+              1
+            ]
+          ],
+          "expected": 0
+        },
+        {
+          "args": [
+            [
+              2,
+              4
+            ]
+          ],
+          "expected": 2
+        },
+        {
+          "args": [
+            [
+              5
+            ]
+          ],
+          "expected": 0
+        }
+      ],
+      "reference_solution": "max_stock_profit",
+      "complexity": "O(n) time, O(1) space",
+      "common_mistakes": "Selling before buying; allowing multiple transactions; failing to handle monotonically decreasing prices."
+    },
+    {
+      "id": "DSA009",
+      "title": "Longest Substring Without Repeats",
+      "category": "dsa",
+      "topic": "Strings / Sliding Window",
+      "difficulty": "Medium",
+      "statement": "Return the length of the longest substring with no repeated characters.",
+      "constraints": "String length up to 200000; arbitrary Unicode characters.",
+      "examples": {
+        "input": {
+          "s": "abcabcbb"
+        },
+        "output": 3
+      },
+      "test_cases": [
+        {
+          "args": [
+            "abcabcbb"
+          ],
+          "expected": 3
+        },
+        {
+          "args": [
+            "bbbbb"
+          ],
+          "expected": 1
+        },
+        {
+          "args": [
+            "pwwkew"
+          ],
+          "expected": 3
+        },
+        {
+          "args": [
+            ""
+          ],
+          "expected": 0
+        },
+        {
+          "args": [
+            "abba"
+          ],
+          "expected": 2
+        }
+      ],
+      "reference_solution": "longest_unique_substring",
+      "complexity": "O(n) expected time, O(k) space",
+      "common_mistakes": "Moving the left boundary backwards when a duplicate was seen earlier; confusing substring with subsequence."
+    },
+    {
+      "id": "DSA010",
+      "title": "Balanced Brackets",
+      "category": "dsa",
+      "topic": "Stack",
+      "difficulty": "Easy",
+      "statement": "Return true when (), [], and {} brackets are correctly nested and matched; other characters do not occur.",
+      "constraints": "String length up to 200000.",
+      "examples": {
+        "input": {
+          "s": "{[()]}"
+        },
+        "output": true
+      },
+      "test_cases": [
+        {
+          "args": [
+            "{[()]}"
+          ],
+          "expected": true
+        },
+        {
+          "args": [
+            "([)]"
+          ],
+          "expected": false
+        },
+        {
+          "args": [
+            ""
+          ],
+          "expected": true
+        },
+        {
+          "args": [
+            "((("
+          ],
+          "expected": false
+        },
+        {
+          "args": [
+            "]"
+          ],
+          "expected": false
+        }
+      ],
+      "reference_solution": "is_balanced",
+      "complexity": "O(n) time, O(n) space",
+      "common_mistakes": "Checking only counts rather than nesting order; popping an empty stack; accepting leftover opening brackets."
+    },
+    {
+      "id": "DSA011",
+      "title": "Top K Frequent Elements",
+      "category": "dsa",
+      "topic": "Hashing / Heap",
+      "difficulty": "Medium",
+      "statement": "Return the k most frequent values. If frequencies tie, smaller numeric values must appear first.",
+      "constraints": "1 <= len(nums) <= 100000; 1 <= k <= number of distinct values.",
+      "examples": {
+        "input": {
+          "nums": [
+            1,
+            1,
+            1,
+            2,
+            2,
+            3
+          ],
+          "k": 2
+        },
+        "output": [
+          1,
+          2
+        ]
+      },
+      "test_cases": [
+        {
+          "args": [
+            [
+              1,
+              1,
+              1,
+              2,
+              2,
+              3
+            ],
+            2
+          ],
+          "expected": [
+            1,
+            2
+          ]
+        },
+        {
+          "args": [
+            [
+              4,
+              4,
+              1,
+              1,
+              2,
+              2
+            ],
+            2
+          ],
+          "expected": [
+            1,
+            2
+          ]
+        },
+        {
+          "args": [
+            [
+              9
+            ],
+            1
+          ],
+          "expected": [
+            9
+          ]
+        }
+      ],
+      "reference_solution": "top_k_frequent",
+      "complexity": "O(n log n) time with sorting distinct values; O(n) space",
+      "common_mistakes": "Not defining tie behavior; returning duplicates; assuming input values are positive."
+    },
+    {
+      "id": "DSA012",
+      "title": "Product Except Self",
+      "category": "dsa",
+      "topic": "Arrays / Prefix-Suffix",
+      "difficulty": "Medium",
+      "statement": "Return an array where each position is the product of all other elements, without using division.",
+      "constraints": "2 <= len(nums) <= 100000; products fit signed 64-bit integer.",
+      "examples": {
+        "input": {
+          "nums": [
+            1,
+            2,
+            3,
+            4
+          ]
+        },
+        "output": [
+          24,
+          12,
+          8,
+          6
+        ]
+      },
+      "test_cases": [
+        {
+          "args": [
+            [
+              1,
+              2,
+              3,
+              4
+            ]
+          ],
+          "expected": [
+            24,
+            12,
+            8,
+            6
+          ]
+        },
+        {
+          "args": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ],
+          "expected": [
+            6,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "args": [
+            [
+              -1,
+              1,
+              0,
+              -3,
+              3
+            ]
+          ],
+          "expected": [
+            0,
+            0,
+            9,
+            0,
+            0
+          ]
+        }
+      ],
+      "reference_solution": "product_except_self",
+      "complexity": "O(n) time, O(1) extra space excluding output",
+      "common_mistakes": "Using division despite the requirement; mishandling zero values; forgetting prefix or suffix product updates."
+    },
+    {
+      "id": "DSA013",
+      "title": "Rotate Array Right",
+      "category": "dsa",
+      "topic": "Arrays",
+      "difficulty": "Easy",
+      "statement": "Rotate an array right by k positions and return the resulting array.",
+      "constraints": "0 <= len(nums) <= 200000; k >= 0.",
+      "examples": {
+        "input": {
+          "nums": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "k": 3
+        },
+        "output": [
+          5,
+          6,
+          7,
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      "test_cases": [
+        {
+          "args": [
+            [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            3
+          ],
+          "expected": [
+            5,
+            6,
+            7,
+            1,
+            2,
+            3,
+            4
+          ]
+        },
+        {
+          "args": [
+            [
+              1,
+              2
+            ],
+            0
+          ],
+          "expected": [
+            1,
+            2
+          ]
+        },
+        {
+          "args": [
+            [
+              1,
+              2,
+              3
+            ],
+            8
+          ],
+          "expected": [
+            2,
+            3,
+            1
+          ]
+        },
+        {
+          "args": [
+            [],
+            3
+          ],
+          "expected": []
+        }
+      ],
+      "reference_solution": "rotate_right",
+      "complexity": "O(n) time, O(n) output space",
+      "common_mistakes": "Forgetting k modulo n; failing on empty arrays; rotating left instead of right."
+    },
+    {
+      "id": "DSA014",
+      "title": "Missing Number",
+      "category": "dsa",
+      "topic": "Arrays / Math",
+      "difficulty": "Easy",
+      "statement": "An array contains n distinct values from 0 through n with one value missing. Return the missing value.",
+      "constraints": "0 <= len(nums) <= 100000; values are distinct and in [0,n].",
+      "examples": {
+        "input": {
+          "nums": [
+            3,
+            0,
+            1
+          ]
+        },
+        "output": 2
+      },
+      "test_cases": [
+        {
+          "args": [
+            [
+              3,
+              0,
+              1
+            ]
+          ],
+          "expected": 2
+        },
+        {
+          "args": [
+            [
+              0,
+              1
+            ]
+          ],
+          "expected": 2
+        },
+        {
+          "args": [
+            [
+              1
+            ]
+          ],
+          "expected": 0
+        },
+        {
+          "args": [
+            []
+          ],
+          "expected": 0
+        }
+      ],
+      "reference_solution": "missing_number",
+      "complexity": "O(n) time, O(1) extra space",
+      "common_mistakes": "Assuming values start at 1; using an incorrect range endpoint; integer overflow in languages with narrow integer types."
+    },
+    {
+      "id": "DSA015",
+      "title": "Group Anagrams",
+      "category": "dsa",
+      "topic": "Hashing / Strings",
+      "difficulty": "Medium",
+      "statement": "Group strings that are anagrams. The order of groups and members does not matter.",
+      "constraints": "1 <= number of strings <= 10000; total characters <= 200000.",
+      "examples": {
+        "input": {
+          "strs": [
+            "eat",
+            "tea",
+            "tan",
+            "ate",
+            "nat",
+            "bat"
+          ]
+        },
+        "output": [
+          [
+            "eat",
+            "tea",
+            "ate"
+          ],
+          [
+            "tan",
+            "nat"
+          ],
+          [
+            "bat"
+          ]
+        ]
+      },
+      "test_cases": [
+        {
+          "args": [
+            [
+              "eat",
+              "tea",
+              "tan",
+              "ate",
+              "nat",
+              "bat"
+            ]
+          ],
+          "expected_groups": [
+            [
+              "eat",
+              "tea",
+              "ate"
+            ],
+            [
+              "tan",
+              "nat"
+            ],
+            [
+              "bat"
+            ]
+          ]
+        },
+        {
+          "args": [
+            [
+              ""
+            ]
+          ],
+          "expected_groups": [
+            [
+              ""
+            ]
+          ]
+        },
+        {
+          "args": [
+            [
+              "a",
+              "b",
+              "a"
+            ]
+          ],
+          "expected_groups": [
+            [
+              "a",
+              "a"
+            ],
+            [
+              "b"
+            ]
+          ]
+        }
+      ],
+      "reference_solution": "group_anagrams",
+      "complexity": "O(total characters * log(max word length)) time; O(total characters) space",
+      "common_mistakes": "Using a key that loses character counts; assuming input has no empty strings; comparing groups in a fixed order."
+    },
+    {
+      "id": "DSA016",
+      "title": "Number of Islands",
+      "category": "dsa",
+      "topic": "Graphs / DFS",
+      "difficulty": "Medium",
+      "statement": "Given a rectangular grid of '1' and '0', count connected groups of land using 4-directional adjacency.",
+      "constraints": "1 <= rows, cols <= 300.",
+      "examples": {
+        "input": {
+          "grid": [
+            "11000",
+            "11000",
+            "00100",
+            "00011"
+          ]
+        },
+        "output": 3
+      },
+      "test_cases": [
+        {
+          "args": [
+            [
+              [
+                "1",
+                "1",
+                "0"
+              ],
+              [
+                "0",
+                "1",
+                "0"
+              ],
+              [
+                "0",
+                "0",
+                "1"
+              ]
+            ]
+          ],
+          "expected": 2
+        },
+        {
+          "args": [
+            [
+              [
+                "0"
+              ]
+            ]
+          ],
+          "expected": 0
+        },
+        {
+          "args": [
+            [
+              [
+                "1"
+              ]
+            ]
+          ],
+          "expected": 1
+        }
+      ],
+      "reference_solution": "num_islands",
+      "complexity": "O(rows * cols) time, O(rows * cols) worst-case space",
+      "common_mistakes": "Counting each land cell as an island; using diagonal adjacency; revisiting cells indefinitely."
+    },
+    {
+      "id": "DSA017",
+      "title": "Shortest Path in Unweighted Graph",
+      "category": "dsa",
+      "topic": "Graphs / BFS",
+      "difficulty": "Medium",
+      "statement": "Given an undirected graph with n vertices labeled 0..n-1 and edges, return the shortest number of edges from source to target, or -1 if unreachable.",
+      "constraints": "1 <= n <= 100000; graph is unweighted.",
+      "examples": {
+        "input": {
+          "n": 5,
+          "edges": [
+            [
+              0,
+              1
+            ],
+            [
+              0,
+              2
+            ],
+            [
+              1,
+              3
+            ],
+            [
+              2,
+              3
+            ]
+          ],
+          "source": 0,
+          "target": 3
+        },
+        "output": 2
+      },
+      "test_cases": [
+        {
+          "args": [
+            5,
+            [
+              [
+                0,
+                1
+              ],
+              [
+                0,
+                2
+              ],
+              [
+                1,
+                3
+              ],
+              [
+                2,
+                3
+              ]
+            ],
+            0,
+            3
+          ],
+          "expected": 2
+        },
+        {
+          "args": [
+            3,
+            [
+              [
+                0,
+                1
+              ]
+            ],
+            0,
+            2
+          ],
+          "expected": -1
+        },
+        {
+          "args": [
+            1,
+            [],
+            0,
+            0
+          ],
+          "expected": 0
+        }
+      ],
+      "reference_solution": "shortest_path_unweighted",
+      "complexity": "O(V+E) time, O(V+E) space",
+      "common_mistakes": "Using DFS and assuming the first found path is shortest; forgetting disconnected vertices; adding duplicate edges is harmless but can waste time."
+    },
+    {
+      "id": "DSA018",
+      "title": "Climbing Stairs",
+      "category": "dsa",
+      "topic": "Dynamic Programming",
+      "difficulty": "Easy",
+      "statement": "Count ways to reach step n when each move is 1 or 2 steps.",
+      "constraints": "0 <= n <= 90.",
+      "examples": {
+        "input": {
+          "n": 5
+        },
+        "output": 8
+      },
+      "test_cases": [
+        {
+          "args": [
+            0
+          ],
+          "expected": 1
+        },
+        {
+          "args": [
+            1
+          ],
+          "expected": 1
+        },
+        {
+          "args": [
+            2
+          ],
+          "expected": 2
+        },
+        {
+          "args": [
+            5
+          ],
+          "expected": 8
+        }
+      ],
+      "reference_solution": "climb_stairs",
+      "complexity": "O(n) time, O(1) space",
+      "common_mistakes": "Wrong base cases; confusing Fibonacci indexing; returning zero for n=0 when the empty sequence counts as one way."
+    },
+    {
+      "id": "DSA019",
+      "title": "Coin Change Minimum",
+      "category": "dsa",
+      "topic": "Dynamic Programming",
+      "difficulty": "Medium",
+      "statement": "Return the minimum number of coins needed to make amount, or -1 if impossible. Coins can be reused unlimited times.",
+      "constraints": "1 <= len(coins) <= 12; 0 <= amount <= 100000.",
+      "examples": {
+        "input": {
+          "coins": [
+            1,
+            2,
+            5
+          ],
+          "amount": 11
+        },
+        "output": 3
+      },
+      "test_cases": [
+        {
+          "args": [
+            [
+              1,
+              2,
+              5
+            ],
+            11
+          ],
+          "expected": 3
+        },
+        {
+          "args": [
+            [
+              2
+            ],
+            3
+          ],
+          "expected": -1
+        },
+        {
+          "args": [
+            [
+              1
+            ],
+            0
+          ],
+          "expected": 0
+        },
+        {
+          "args": [
+            [
+              2,
+              5,
+              10
+            ],
+            6
+          ],
+          "expected": 3
+        }
+      ],
+      "reference_solution": "coin_change",
+      "complexity": "O(amount * number of coin types) time, O(amount) space",
+      "common_mistakes": "Greedy choice fails for arbitrary coin systems; treating unreachable states as zero; not handling amount=0."
+    },
+    {
+      "id": "DSA020",
+      "title": "Merge Overlapping Intervals",
+      "category": "dsa",
+      "topic": "Sorting / Intervals",
+      "difficulty": "Medium",
+      "statement": "Merge all overlapping intervals and return non-overlapping intervals sorted by start. Touching endpoints count as overlapping.",
+      "constraints": "0 <= number of intervals <= 100000; start <= end.",
+      "examples": {
+        "input": {
+          "intervals": [
+            [
+              1,
+              3
+            ],
+            [
+              2,
+              6
+            ],
+            [
+              8,
+              10
+            ],
+            [
+              15,
+              18
+            ]
+          ]
+        },
+        "output": [
+          [
+            1,
+            6
+          ],
+          [
+            8,
+            10
+          ],
+          [
+            15,
+            18
+          ]
+        ]
+      },
+      "test_cases": [
+        {
+          "args": [
+            [
+              [
+                1,
+                3
+              ],
+              [
+                2,
+                6
+              ],
+              [
+                8,
+                10
+              ],
+              [
+                15,
+                18
+              ]
+            ]
+          ],
+          "expected": [
+            [
+              1,
+              6
+            ],
+            [
+              8,
+              10
+            ],
+            [
+              15,
+              18
+            ]
+          ]
+        },
+        {
+          "args": [
+            [
+              [
+                1,
+                4
+              ],
+              [
+                4,
+                5
+              ]
+            ]
+          ],
+          "expected": [
+            [
+              1,
+              5
+            ]
+          ]
+        },
+        {
+          "args": [
+            []
+          ],
+          "expected": []
+        },
+        {
+          "args": [
+            [
+              [
+                1,
+                2
+              ]
+            ]
+          ],
+          "expected": [
+            [
+              1,
+              2
+            ]
+          ]
+        }
+      ],
+      "reference_solution": "merge_intervals",
+      "complexity": "O(n log n) time, O(n) output space",
+      "common_mistakes": "Not sorting first; treating touching endpoints as separate; mutating interval endpoints incorrectly."
+    },
+    {
+      "id": "SQL001",
+      "title": "Customers Without Orders",
+      "category": "sql",
+      "topic": "Joins / NULL",
+      "difficulty": "Easy",
+      "statement": "Return customer IDs and names for customers who have never placed an order.",
+      "constraints": "Use the schema listed below. Unless stated otherwise, return only the requested columns.",
+      "schema": "customers(customer_id, name); orders(order_id, customer_id, order_date, amount)",
+      "reference_solution": "SELECT c.customer_id, c.name FROM customers c LEFT JOIN orders o ON o.customer_id = c.customer_id WHERE o.order_id IS NULL ORDER BY c.customer_id;",
+      "complexity": "Depends on indexes and database query plan; discuss scans, joins, grouping, and sorting.",
+      "common_mistakes": "LEFT JOIN plus IS NULL or NOT EXISTS; avoid NOT IN if the subquery may contain NULL.",
+      "test_cases": [
+        "Create data for empty tables, duplicate keys, NULL values, ties, and boundary dates as relevant."
+      ]
+    },
+    {
+      "id": "SQL002",
+      "title": "Revenue by Region",
+      "category": "sql",
+      "topic": "GROUP BY / Aggregation",
+      "difficulty": "Easy",
+      "statement": "Return each region and total order revenue, including only regions with revenue above 1000.",
+      "constraints": "Use the schema listed below. Unless stated otherwise, return only the requested columns.",
+      "schema": "customers(customer_id, name, region); orders(order_id, customer_id, order_date, amount)",
+      "reference_solution": "SELECT c.region, SUM(o.amount) AS revenue FROM customers c JOIN orders o ON o.customer_id = c.customer_id GROUP BY c.region HAVING SUM(o.amount) > 1000 ORDER BY revenue DESC;",
+      "complexity": "Depends on indexes and database query plan; discuss scans, joins, grouping, and sorting.",
+      "common_mistakes": "Filter aggregated results with HAVING, not WHERE.",
+      "test_cases": [
+        "Create data for empty tables, duplicate keys, NULL values, ties, and boundary dates as relevant."
+      ]
+    },
+    {
+      "id": "SQL003",
+      "title": "Second Highest Salary",
+      "category": "sql",
+      "topic": "Subqueries",
+      "difficulty": "Easy",
+      "statement": "Return the second-highest distinct salary, or NULL if it does not exist.",
+      "constraints": "Use the schema listed below. Unless stated otherwise, return only the requested columns.",
+      "schema": "employees(employee_id, name, salary)",
+      "reference_solution": "SELECT MAX(salary) AS second_highest_salary FROM employees WHERE salary < (SELECT MAX(salary) FROM employees);",
+      "complexity": "Depends on indexes and database query plan; discuss scans, joins, grouping, and sorting.",
+      "common_mistakes": "Distinct salary levels matter; MAX below the maximum handles ties.",
+      "test_cases": [
+        "Create data for empty tables, duplicate keys, NULL values, ties, and boundary dates as relevant."
+      ]
+    },
+    {
+      "id": "SQL004",
+      "title": "Top Employee per Department",
+      "category": "sql",
+      "topic": "Window Functions",
+      "difficulty": "Medium",
+      "statement": "Return all employees tied for the highest salary in each department.",
+      "constraints": "Use the schema listed below. Unless stated otherwise, return only the requested columns.",
+      "schema": "employees(employee_id, name, department_id, salary)",
+      "reference_solution": "WITH ranked AS (SELECT e.*, DENSE_RANK() OVER (PARTITION BY department_id ORDER BY salary DESC) AS rnk FROM employees e) SELECT employee_id, name, department_id, salary FROM ranked WHERE rnk = 1 ORDER BY department_id, employee_id;",
+      "complexity": "Depends on indexes and database query plan; discuss scans, joins, grouping, and sorting.",
+      "common_mistakes": "Use DENSE_RANK or RANK to preserve ties; ROW_NUMBER returns only one winner.",
+      "test_cases": [
+        "Create data for empty tables, duplicate keys, NULL values, ties, and boundary dates as relevant."
+      ]
+    },
+    {
+      "id": "SQL005",
+      "title": "Monthly Revenue",
+      "category": "sql",
+      "topic": "Date Functions / Aggregation",
+      "difficulty": "Easy",
+      "statement": "Return monthly revenue grouped by year and month. Ignore rows with NULL amount.",
+      "constraints": "Use the schema listed below. Unless stated otherwise, return only the requested columns.",
+      "schema": "orders(order_id, order_date, amount)",
+      "reference_solution": "SELECT strftime('%Y-%m', order_date) AS month, SUM(amount) AS revenue FROM orders WHERE amount IS NOT NULL GROUP BY strftime('%Y-%m', order_date) ORDER BY month;",
+      "complexity": "Depends on indexes and database query plan; discuss scans, joins, grouping, and sorting.",
+      "common_mistakes": "This reference uses SQLite strftime; date syntax varies by database.",
+      "test_cases": [
+        "Create data for empty tables, duplicate keys, NULL values, ties, and boundary dates as relevant."
+      ]
+    },
+    {
+      "id": "SQL006",
+      "title": "Duplicate Emails",
+      "category": "sql",
+      "topic": "GROUP BY / HAVING",
+      "difficulty": "Easy",
+      "statement": "Return email addresses that occur more than once. Ignore NULL email values.",
+      "constraints": "Use the schema listed below. Unless stated otherwise, return only the requested columns.",
+      "schema": "users(user_id, email)",
+      "reference_solution": "SELECT email FROM users WHERE email IS NOT NULL GROUP BY email HAVING COUNT(*) > 1 ORDER BY email;",
+      "complexity": "Depends on indexes and database query plan; discuss scans, joins, grouping, and sorting.",
+      "common_mistakes": "Use COUNT(*) after excluding NULLs; grouping by user_id would defeat duplicate detection.",
+      "test_cases": [
+        "Create data for empty tables, duplicate keys, NULL values, ties, and boundary dates as relevant."
+      ]
+    },
+    {
+      "id": "SQL007",
+      "title": "Customers With At Least Three Orders",
+      "category": "sql",
+      "topic": "Aggregation / Join",
+      "difficulty": "Easy",
+      "statement": "Return each customer ID and name for customers with at least three orders.",
+      "constraints": "Use the schema listed below. Unless stated otherwise, return only the requested columns.",
+      "schema": "customers(customer_id, name); orders(order_id, customer_id, order_date, amount)",
+      "reference_solution": "SELECT c.customer_id, c.name FROM customers c JOIN orders o ON o.customer_id = c.customer_id GROUP BY c.customer_id, c.name HAVING COUNT(o.order_id) >= 3 ORDER BY c.customer_id;",
+      "complexity": "Depends on indexes and database query plan; discuss scans, joins, grouping, and sorting.",
+      "common_mistakes": "COUNT orders, not amount; aggregate by customer identity.",
+      "test_cases": [
+        "Create data for empty tables, duplicate keys, NULL values, ties, and boundary dates as relevant."
+      ]
+    },
+    {
+      "id": "SQL008",
+      "title": "Running Account Balance",
+      "category": "sql",
+      "topic": "Window Functions",
+      "difficulty": "Medium",
+      "statement": "For each account transaction, return transaction ID, account ID, date, amount, and running balance. Order same-day transactions by transaction_id.",
+      "constraints": "Use the schema listed below. Unless stated otherwise, return only the requested columns.",
+      "schema": "transactions(transaction_id, account_id, transaction_date, amount)",
+      "reference_solution": "SELECT transaction_id, account_id, transaction_date, amount, SUM(amount) OVER (PARTITION BY account_id ORDER BY transaction_date, transaction_id ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS running_balance FROM transactions ORDER BY account_id, transaction_date, transaction_id;",
+      "complexity": "Depends on indexes and database query plan; discuss scans, joins, grouping, and sorting.",
+      "common_mistakes": "Include a deterministic tie-breaker and explicit ROWS frame.",
+      "test_cases": [
+        "Create data for empty tables, duplicate keys, NULL values, ties, and boundary dates as relevant."
+      ]
+    },
+    {
+      "id": "SQL009",
+      "title": "Products Never Sold",
+      "category": "sql",
+      "topic": "Anti-Join",
+      "difficulty": "Medium",
+      "statement": "Return product IDs and names for products that do not appear in any order item.",
+      "constraints": "Use the schema listed below. Unless stated otherwise, return only the requested columns.",
+      "schema": "products(product_id, name); order_items(order_id, product_id, quantity)",
+      "reference_solution": "SELECT p.product_id, p.name FROM products p WHERE NOT EXISTS (SELECT 1 FROM order_items oi WHERE oi.product_id = p.product_id) ORDER BY p.product_id;",
+      "complexity": "Depends on indexes and database query plan; discuss scans, joins, grouping, and sorting.",
+      "common_mistakes": "A product can exist without sales; NOT EXISTS avoids NULL pitfalls.",
+      "test_cases": [
+        "Create data for empty tables, duplicate keys, NULL values, ties, and boundary dates as relevant."
+      ]
+    },
+    {
+      "id": "SQL010",
+      "title": "Daily Active Users",
+      "category": "sql",
+      "topic": "Date / DISTINCT",
+      "difficulty": "Medium",
+      "statement": "Return each date and count of distinct users who performed at least one event that day.",
+      "constraints": "Use the schema listed below. Unless stated otherwise, return only the requested columns.",
+      "schema": "events(event_id, user_id, event_time)",
+      "reference_solution": "SELECT date(event_time) AS event_date, COUNT(DISTINCT user_id) AS active_users FROM events WHERE user_id IS NOT NULL GROUP BY date(event_time) ORDER BY event_date;",
+      "complexity": "Depends on indexes and database query plan; discuss scans, joins, grouping, and sorting.",
+      "common_mistakes": "Count distinct users rather than events; date truncation depends on SQL dialect.",
+      "test_cases": [
+        "Create data for empty tables, duplicate keys, NULL values, ties, and boundary dates as relevant."
+      ]
+    }
+  ]
+}

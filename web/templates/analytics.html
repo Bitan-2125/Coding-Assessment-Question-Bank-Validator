@@ -1,0 +1,213 @@
+{% extends "base.html" %}
+{% block title %}Analytics{% endblock %}
+{% block content %}
+<h1>Analytics</h1>
+
+<!-- summary cards -->
+<div class="stat-row">
+  <div class="stat-card">
+    <div class="stat-num">{{ stats.bank_size }}</div>
+    <div class="stat-label">Total Questions</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-num">{{ stats.total_runs }}</div>
+    <div class="stat-label">Test Runs</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-num green">{{ stats.total_passed }}</div>
+    <div class="stat-label">Cases Passed</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-num red">{{ stats.total_failed }}</div>
+    <div class="stat-label">Cases Failed</div>
+  </div>
+</div>
+
+{% if stats.total_runs == 0 %}
+<div class="no-data">
+  No test runs recorded yet. Go to
+  <a href="/run-tests">Run Tests</a> and run a suite — results will appear here.
+</div>
+{% else %}
+
+<!-- charts row -->
+<div class="chart-row">
+  <div class="chart-card">
+    <h2>Pass Rate by Difficulty</h2>
+    <canvas id="chartDiff"></canvas>
+  </div>
+  <div class="chart-card">
+    <h2>Pass Rate by Category</h2>
+    <canvas id="chartCat"></canvas>
+  </div>
+</div>
+
+<div class="chart-card wide">
+  <h2>Pass Rate by Topic</h2>
+  <canvas id="chartTopic"></canvas>
+</div>
+
+<div class="chart-card wide">
+  <h2>Test Run Trend (last {{ stats.trend | length }} runs)</h2>
+  <canvas id="chartTrend"></canvas>
+</div>
+
+<!-- top failing -->
+{% if stats.top_failing %}
+<div class="chart-card wide">
+  <h2>Top Failing Problems</h2>
+  <table>
+    <thead><tr><th>Problem</th><th>Failed Cases</th></tr></thead>
+    <tbody>
+    {% for row in stats.top_failing %}
+      <tr>
+        <td><a href="/question/{{ row.problem_id }}">{{ row.problem_id }}</a></td>
+        <td>{{ row.failures }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+
+{% endif %}
+
+<!-- export -->
+<div class="export-row">
+  <h2>Export</h2>
+  <a href="/export/runs.csv" class="export-btn">Download runs.csv</a>
+  <a href="/export/case-results.csv" class="export-btn">Download case_results.csv</a>
+</div>
+
+<!-- recent runs table -->
+{% if runs %}
+<div class="chart-card wide">
+  <h2>Recent Runs</h2>
+  <table>
+    <thead>
+      <tr><th>#</th><th>Suite</th><th>Time (UTC)</th><th>Passed</th><th>Failed</th><th>Skipped</th><th>Status</th></tr>
+    </thead>
+    <tbody>
+    {% for r in runs %}
+      <tr>
+        <td>{{ r.id }}</td>
+        <td>{{ r.suite }}</td>
+        <td>{{ r.ran_at[:19].replace('T',' ') }}</td>
+        <td class="green">{{ r.passed }}</td>
+        <td class="red">{{ r.failed }}</td>
+        <td>{{ r.skipped }}</td>
+        <td><span class="badge {{ 'easy' if r.exit_code == 0 else 'hard' }}">
+          {{ 'PASS' if r.exit_code == 0 else 'FAIL' }}
+        </span></td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+
+{% if stats.total_runs > 0 %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+const PASS_COLOR = 'rgba(74,222,128,0.8)';
+const FAIL_COLOR = 'rgba(248,113,113,0.8)';
+const GRID       = '#1e293b';
+const TEXT       = '#94a3b8';
+
+Chart.defaults.color = TEXT;
+Chart.defaults.borderColor = GRID;
+
+function rateChart(id, labels, passed, failed, horizontal=false) {
+  const total = labels.map((_,i) => (passed[i]||0) + (failed[i]||0));
+  const rates = labels.map((_,i) => total[i] ? +(passed[i]/total[i]*100).toFixed(1) : 0);
+  new Chart(document.getElementById(id), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Pass %',
+        data: rates,
+        backgroundColor: rates.map(r => r >= 80 ? PASS_COLOR : r >= 50 ? 'rgba(251,146,60,0.8)' : FAIL_COLOR),
+        borderRadius: 4,
+      }]
+    },
+    options: {
+      indexAxis: horizontal ? 'y' : 'x',
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { color: GRID } },
+        y: { min: 0, max: 100, grid: { color: GRID },
+             ticks: { callback: v => v + '%' } }
+      }
+    }
+  });
+}
+
+// difficulty chart
+const diffData = {{ stats.by_difficulty | tojson }};
+rateChart('chartDiff',
+  Object.keys(diffData),
+  Object.values(diffData).map(v => v.passed),
+  Object.values(diffData).map(v => v.failed)
+);
+
+// category chart
+const catData = {{ stats.by_category | tojson }};
+rateChart('chartCat',
+  Object.keys(catData),
+  Object.values(catData).map(v => v.passed),
+  Object.values(catData).map(v => v.failed)
+);
+
+// topic chart (horizontal)
+const topicData = {{ stats.by_topic | tojson }};
+const topicLabels = Object.keys(topicData);
+const topicPassed = topicLabels.map(k => topicData[k].passed);
+const topicFailed = topicLabels.map(k => topicData[k].failed);
+const topicTotal  = topicLabels.map((_,i) => (topicPassed[i]||0)+(topicFailed[i]||0));
+const topicRates  = topicLabels.map((_,i) => topicTotal[i] ? +(topicPassed[i]/topicTotal[i]*100).toFixed(1) : 0);
+new Chart(document.getElementById('chartTopic'), {
+  type: 'bar',
+  data: {
+    labels: topicLabels,
+    datasets: [
+      { label: 'Passed', data: topicPassed, backgroundColor: PASS_COLOR, borderRadius: 3 },
+      { label: 'Failed', data: topicFailed, backgroundColor: FAIL_COLOR, borderRadius: 3 },
+    ]
+  },
+  options: {
+    indexAxis: 'y',
+    plugins: { legend: { position: 'top' } },
+    scales: {
+      x: { stacked: true, grid: { color: GRID } },
+      y: { stacked: true, grid: { color: GRID } }
+    }
+  }
+});
+
+// trend chart
+const trend = {{ stats.trend | tojson }};
+new Chart(document.getElementById('chartTrend'), {
+  type: 'line',
+  data: {
+    labels: trend.map(r => r.ran_at.slice(0,16).replace('T',' ')),
+    datasets: [
+      { label: 'Passed', data: trend.map(r=>r.passed),
+        borderColor: '#4ade80', backgroundColor: 'rgba(74,222,128,0.1)',
+        tension: 0.3, fill: true, pointRadius: 4 },
+      { label: 'Failed', data: trend.map(r=>r.failed),
+        borderColor: '#f87171', backgroundColor: 'rgba(248,113,113,0.1)',
+        tension: 0.3, fill: true, pointRadius: 4 },
+    ]
+  },
+  options: {
+    plugins: { legend: { position: 'top' } },
+    scales: {
+      x: { grid: { color: GRID }, ticks: { maxRotation: 30 } },
+      y: { min: 0, grid: { color: GRID } }
+    }
+  }
+});
+</script>
+{% endif %}
+{% endblock %}

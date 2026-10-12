@@ -1,0 +1,21 @@
+-- SQLite-compatible practice schema. Run: sqlite3 assessment.db < sql/schema.sql
+PRAGMA foreign_keys = ON;
+DROP TABLE IF EXISTS order_items; DROP TABLE IF EXISTS products; DROP TABLE IF EXISTS events;
+DROP TABLE IF EXISTS transactions; DROP TABLE IF EXISTS users; DROP TABLE IF EXISTS orders;
+DROP TABLE IF EXISTS employees; DROP TABLE IF EXISTS customers;
+CREATE TABLE customers(customer_id INTEGER PRIMARY KEY, name TEXT NOT NULL, region TEXT);
+CREATE TABLE orders(order_id INTEGER PRIMARY KEY, customer_id INTEGER, order_date TEXT, amount REAL, FOREIGN KEY(customer_id) REFERENCES customers(customer_id));
+CREATE TABLE employees(employee_id INTEGER PRIMARY KEY, name TEXT NOT NULL, department_id INTEGER, salary REAL);
+CREATE TABLE users(user_id INTEGER PRIMARY KEY, email TEXT);
+CREATE TABLE products(product_id INTEGER PRIMARY KEY, name TEXT NOT NULL);
+CREATE TABLE order_items(order_id INTEGER, product_id INTEGER, quantity INTEGER);
+CREATE TABLE transactions(transaction_id INTEGER PRIMARY KEY, account_id INTEGER, transaction_date TEXT, amount REAL);
+CREATE TABLE events(event_id INTEGER PRIMARY KEY, user_id INTEGER, event_time TEXT);
+INSERT INTO customers VALUES (1,'Asha','North'),(2,'Ravi','South'),(3,'Mina','North'),(4,'Noah','West'),(5,'Ira',NULL);
+INSERT INTO orders VALUES (101,1,'2026-01-02',600),(102,1,'2026-01-10',700),(103,2,'2026-02-01',200),(104,3,'2026-02-10',NULL),(105,1,'2026-02-11',100),(106,2,'2026-02-12',900);
+INSERT INTO employees VALUES (1,'Dev',10,100000),(2,'Mira',10,120000),(3,'Sam',10,120000),(4,'Ari',20,90000),(5,'Lee',20,80000);
+INSERT INTO users VALUES (1,'a@example.com'),(2,'b@example.com'),(3,'a@example.com'),(4,NULL);
+INSERT INTO products VALUES (1,'Pen'),(2,'Notebook'),(3,'Bag');
+INSERT INTO order_items VALUES (101,1,2),(101,2,1),(102,1,1);
+INSERT INTO transactions VALUES (1,7,'2026-01-01',100),(2,7,'2026-01-01',-20),(3,7,'2026-01-03',50),(4,8,'2026-01-02',200);
+INSERT INTO events VALUES (1,1,'2026-01-01 09:00:00'),(2,1,'2026-01-01 10:00:00'),(3,2,'2026-01-01 11:00:00'),(4,1,'2026-01-02 08:00:00'),(5,NULL,'2026-01-02 09:00:00');

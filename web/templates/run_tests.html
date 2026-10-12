@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Run Tests{% endblock %}
+{% block content %}
+<h1>Run Tests</h1>
+
+<div class="test-grid">
+  <div class="test-card">
+    <h2>Python DSA</h2>
+    <p>Validates all 20 DSA reference solutions against the test cases in <code>question_bank.json</code>.</p>
+    <button class="run-btn" data-url="/api/run-python-tests" data-target="out-python">Run</button>
+    <pre id="out-python" class="output"></pre>
+  </div>
+
+  <div class="test-card">
+    <h2>SQL Queries</h2>
+    <p>Runs all 10 reference SQL queries against the in-memory SQLite schema and compares result sets.</p>
+    <button class="run-btn" data-url="/api/run-sql-tests" data-target="out-sql">Run</button>
+    <pre id="out-sql" class="output"></pre>
+  </div>
+
+  <div class="test-card">
+    <h2>C++ Solutions</h2>
+    <p>Compiles <code>reference_solutions.cpp</code> with the harness and checks 10 supported problems.</p>
+    <button class="run-btn" data-url="/api/run-cpp-tests" data-target="out-cpp">Run</button>
+    <pre id="out-cpp" class="output"></pre>
+  </div>
+</div>
+
+<script>
+document.querySelectorAll('.run-btn').forEach(btn => {
+  btn.addEventListener('click', async () => {
+    const out = document.getElementById(btn.dataset.target);
+    btn.disabled = true;
+    out.textContent = 'Running…';
+    out.className = 'output running';
+    try {
+      const res = await fetch(btn.dataset.url, { method: 'POST' });
+      const data = await res.json();
+      out.textContent = data.output;
+      out.className = 'output ' + (data.exit_code === 0 ? 'pass' : 'fail');
+    } catch(e) {
+      out.textContent = 'Request failed: ' + e;
+      out.className = 'output fail';
+    } finally {
+      btn.disabled = false;
+    }
+  });
+});
+</script>
+{% endblock %}

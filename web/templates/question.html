@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}{{ p.id }} — {{ p.title }}{% endblock %}
+{% block content %}
+<div class="question-header">
+  <h1>{{ p.id }}: {{ p.title }}</h1>
+  <span class="badge {{ p.difficulty|lower }}">{{ p.difficulty }}</span>
+  <span class="badge cat">{{ p.category|upper }}</span>
+  <span class="topic">{{ p.topic }}</span>
+</div>
+
+<section>
+  <h2>Problem</h2>
+  <p>{{ p.statement }}</p>
+  <p><strong>Constraints:</strong> {{ p.constraints }}</p>
+</section>
+
+{% if p.schema is defined and p.schema %}
+<section>
+  <h2>Schema</h2>
+  <pre>{{ p.schema }}</pre>
+</section>
+{% endif %}
+
+{% if p.examples is defined and p.examples %}
+<section>
+  <h2>Example</h2>
+  <pre>Input:  {{ p.examples.input | tojson(indent=2) }}
+Output: {{ p.examples.output | tojson }}</pre>
+</section>
+{% endif %}
+
+{% if p.test_cases %}
+<section>
+  <h2>Test Cases</h2>
+  {% if p.category == 'sql' %}
+  <table>
+    <thead><tr><th>#</th><th>Description</th></tr></thead>
+    <tbody>
+    {% for tc in p.test_cases %}
+      <tr>
+        <td>{{ loop.index }}</td>
+        <td><code>{{ tc | tojson }}</code></td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <table>
+    <thead><tr><th>#</th><th>Args</th><th>Expected</th></tr></thead>
+    <tbody>
+    {% for tc in p.test_cases %}
+      <tr>
+        <td>{{ loop.index }}</td>
+        <td><code>{{ tc.args | tojson }}</code></td>
+        <td><code>{{ (tc.expected if tc.expected is defined else tc.expected_groups) | tojson }}</code></td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+</section>
+{% endif %}
+
+<section>
+  <h2>Analysis</h2>
+  <p><strong>Complexity:</strong> {{ p.complexity }}</p>
+  <p><strong>Common mistakes:</strong> {{ p.common_mistakes }}</p>
+</section>
+
+<a href="/" class="btn-back">← Back</a>
+{% endblock %}
