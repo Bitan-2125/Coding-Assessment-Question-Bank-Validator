@@ -15,10 +15,11 @@ git clone https://github.com/Bitan-2125/Coding-Assessment-Question-Bank-Validato
 cd Coding-Assessment-Question-Bank-Validator
 ```
 
-Start in the inner project directory, not its parent:
+For the existing local copy, the repository root is
+`D:\coding_assessment_bank\coding_assessment_bank`. Run the following from
+the repository root (after cloning, you are already there):
 
 ```powershell
-cd D:\coding_assessment_bank\coding_assessment_bank
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install -r requirements-dev.txt
