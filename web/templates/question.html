@@ -62,6 +62,12 @@ Output: {{ p.examples.output | tojson }}</pre>
 {% endif %}
 
 <section>
+  <h2>Reference Solution</h2>
+  <pre>{{ p.reference_solution }}</pre>
+  {% if p.category == 'dsa' %}<p class="muted">Implementation: python/reference_solutions.py. Validation also checks the published example.</p>{% endif %}
+</section>
+
+<section>
   <h2>Analysis</h2>
   <p><strong>Complexity:</strong> {{ p.complexity }}</p>
   <p><strong>Common mistakes:</strong> {{ p.common_mistakes }}</p>

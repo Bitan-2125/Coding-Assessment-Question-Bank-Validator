@@ -2,6 +2,7 @@
 {% block title %}Analytics{% endblock %}
 {% block content %}
 <h1>Analytics</h1>
+<p class="intro">Historical reference validation results, including repeated runs. Failed runs: {{ stats.failed_runs }}. A compiler or runner failure may occur before any case executes.</p>
 
 <!-- summary cards -->
 <div class="stat-row">
@@ -29,6 +30,19 @@
   <a href="/run-tests">Run Tests</a> and run a suite — results will appear here.
 </div>
 {% else %}
+
+<div class="chart-card wide">
+  <h2>Results by Topic</h2>
+  <p class="muted">Counts remain available when charts cannot load. No cases means no evidence yet.</p>
+  <div class="table-scroll"><table>
+    <thead><tr><th>Topic</th><th>Passed</th><th>Failed</th><th>Pass rate</th></tr></thead>
+    <tbody>{% for topic, counts in stats.by_topic.items() %}
+      {% set total = counts.passed + counts.failed %}
+      <tr><td>{{ topic }}</td><td>{{ counts.passed }}</td><td>{{ counts.failed }}</td>
+      <td>{{ ('%.1f'|format(counts.passed / total * 100)) ~ '%' if total else 'No cases' }}</td></tr>
+    {% endfor %}</tbody>
+  </table></div>
+</div>
 
 <!-- charts row -->
 <div class="chart-row">
@@ -114,6 +128,7 @@ const FAIL_COLOR = 'rgba(248,113,113,0.8)';
 const GRID       = '#1e293b';
 const TEXT       = '#94a3b8';
 
+if (typeof Chart !== 'undefined') {
 Chart.defaults.color = TEXT;
 Chart.defaults.borderColor = GRID;
 
@@ -208,6 +223,7 @@ new Chart(document.getElementById('chartTrend'), {
     }
   }
 });
+}
 </script>
 {% endif %}
 {% endblock %}

@@ -173,3 +173,22 @@ code { font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 0.85rem
 
 td.green { color: #4ade80; }
 td.red   { color: #f87171; }
+
+.intro { color: #a8b6cb; line-height: 1.7; margin-bottom: 1.5rem; max-width: 76ch; }
+.muted { color: #a8b6cb; line-height: 1.6; margin: .6rem 0; }
+.runner-access { padding: 1rem; margin-bottom: 1.5rem; border: 1px solid #334155; border-radius: 8px; }
+input { background: #1e293b; color: #e2e8f0; border: 1px solid #475569; border-radius: 6px; padding: .55rem .75rem; font: inherit; max-width: 100%; }
+.runner-access input { display: block; margin-top: .5rem; width: 26rem; }
+.table-scroll { overflow-x: auto; }
+:focus-visible { outline: 2px solid #7dd3fc; outline-offset: 3px; }
+.skip-link { position: absolute; left: 1rem; top: -100px; background: #1e293b; color: white; padding: 1rem; z-index: 10; }
+.skip-link:focus { top: 0; }
+@media (max-width: 650px) {
+  nav { padding: 1rem; gap: .85rem; flex-wrap: wrap; }
+  nav .brand { flex-basis: 100%; }
+  main { padding: 1.5rem 1rem; overflow-wrap: anywhere; }
+  .chart-row, .test-grid { grid-template-columns: minmax(0, 1fr); }
+  .chart-card { overflow-x: auto; }
+  .filters input { width: 100%; }
+  .filters select { max-width: 100%; }
+}

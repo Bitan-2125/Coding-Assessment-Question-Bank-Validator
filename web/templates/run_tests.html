@@ -2,6 +2,17 @@
 {% block title %}Run Tests{% endblock %}
 {% block content %}
 <h1>Run Tests</h1>
+<p class="intro">Verify the bundled reference solutions and track the results. Output appears when a suite finishes.</p>
+<div class="runner-access">
+{% if runner_enabled %}
+  <label for="runner-token">Runner token</label>
+  <input id="runner-token" type="password" autocomplete="off" placeholder="Enter your configured runner token">
+  <p class="muted">Required to start a suite. The token stays in this page and is not saved.</p>
+{% else %}
+  <p role="status">Execution is disabled. Your administrator must configure ASSESSMENT_RUNNER_TOKEN.</p>
+{% endif %}
+  <p class="muted">This interface runs bundled references only. Candidate code uploads are not supported.</p>
+</div>
 
 <div class="test-grid">
   <div class="test-card">
@@ -13,7 +24,7 @@
 
   <div class="test-card">
     <h2>SQL Queries</h2>
-    <p>Runs all 10 reference SQL queries against the in-memory SQLite schema and compares result sets.</p>
+    <p>Checks 10 SQL references against independent expected results on sample, empty and edge datasets.</p>
     <button class="run-btn" data-url="/api/run-sql-tests" data-target="out-sql">Run</button>
     <pre id="out-sql" class="output"></pre>
   </div>
@@ -24,27 +35,45 @@
     <button class="run-btn" data-url="/api/run-cpp-tests" data-target="out-cpp">Run</button>
     <pre id="out-cpp" class="output"></pre>
   </div>
+  <div class="test-card">
+    <h2>Property and Edge Tests</h2>
+    <p>Runs the Hypothesis suite against the Python references. The number of generated checks varies by run.</p>
+    <button class="run-btn" data-url="/api/run-adversarial-tests" data-target="out-adversarial">Run</button>
+    <pre id="out-adversarial" class="output"></pre>
+  </div>
 </div>
 
 <script>
 document.querySelectorAll('.run-btn').forEach(btn => {
+  btn.disabled = {{ 'false' if runner_enabled else 'true' }};
   btn.addEventListener('click', async () => {
     const out = document.getElementById(btn.dataset.target);
-    btn.disabled = true;
+    const token = document.getElementById('runner-token').value;
+    if (!token) {
+      out.textContent = 'Enter the runner token before starting a suite.';
+      out.className = 'output fail';
+      return;
+    }
+    document.querySelectorAll('.run-btn').forEach(button => button.disabled = true);
     out.textContent = 'Running…';
     out.className = 'output running';
     try {
-      const res = await fetch(btn.dataset.url, { method: 'POST' });
+      const res = await fetch(btn.dataset.url, { method: 'POST', headers: {'X-Runner-Token': token} });
       const data = await res.json();
-      out.textContent = data.output;
-      out.className = 'output ' + (data.exit_code === 0 ? 'pass' : 'fail');
+      const summary = data.status ? `${data.status.toUpperCase()} | ${data.passed} passed | ${data.failed} failed | ${data.duration_seconds}s | Run #${data.run_id}\n\n` : '';
+      out.textContent = summary + (data.output || data.error || 'No output returned.');
+      out.className = 'output ' + (res.ok && data.exit_code === 0 ? 'pass' : 'fail');
     } catch(e) {
       out.textContent = 'Request failed: ' + e;
       out.className = 'output fail';
     } finally {
-      btn.disabled = false;
+      document.querySelectorAll('.run-btn').forEach(button => button.disabled = false);
     }
   });
+});
+document.querySelectorAll('.output').forEach(out => {
+  out.setAttribute('role', 'status');
+  out.setAttribute('aria-live', 'polite');
 });
 </script>
 {% endblock %}

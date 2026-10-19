@@ -1,273 +1,170 @@
-# Coding Assessment Question Bank & Validator
+# Coding Assessment Question Bank Validator
 
-A self-contained coding assessment platform built for practice, portfolio demonstration, and candidate evaluation. It includes **30 original problems** across Data Structures & Algorithms and SQL, each with a full problem statement, constraints, sample I/O, reference solution, complexity analysis, and documented failure modes.
+A Flask application and command-line validators for 30 coding questions:
+20 Python algorithm references, 10 C++ implementations, and 10 SQLite queries.
+The existing Flask/Jinja/SQLite architecture is retained. This delivery adds
+validation contracts, independent SQL fixtures, reliable execution/reporting,
+web protections, regression tests, and an operational handover.
 
-Beyond the question bank, the project includes automated validators for Python, C++17, and SQL submissions, so solutions are actually executed and checked — not just written and forgotten. A lightweight Flask web interface lets you browse and filter problems, run all test suites from the browser, and view an analytics dashboard showing pass rates by topic and difficulty. Every test run is stored in a local SQLite database and can be exported to CSV for further analysis in Excel or Google Sheets.
+## Setup (Windows PowerShell)
 
-Built as a portfolio project for a data analytics / outcome-based learning role — it demonstrates structured problem design, test automation, result tracking, and data visualisation in a single cohesive tool.
+For a fresh checkout:
 
----
-
-## Features
-
-- 30 structured problems — each with difficulty, topic, constraints, sample I/O, reference solution, complexity analysis, and common pitfalls
-- Automated validators for Python, C++17, and SQL submissions
-- 3500+ property-based and adversarial edge-case tests via Hypothesis
-- Web UI to browse, filter, and view questions
-- Analytics dashboard with Chart.js charts — pass rate by difficulty, topic, and category, plus run trend over time
-- CSV export of all test run history for further analysis in Excel / Google Sheets
-
----
-
-## Project Structure
-
-```
-coding_assessment_bank/
-├── question_bank.json          # All 30 problems — metadata, test cases, complexity notes
-├── python/
-│   └── reference_solutions.py  # Python reference implementations (DSA001–DSA020)
-├── cpp/
-│   ├── reference_solutions.cpp # C++17 reference implementations (10 core problems)
-│   └── harness.cpp             # I/O harness for compiling and testing C++ submissions
-├── sql/
-│   ├── schema.sql              # SQLite-compatible schema + sample dataset
-│   └── questions_and_solutions.md  # 10 SQL problems with reference queries and pitfalls
-├── tests/
-│   ├── run_python_tests.py     # Validates Python solutions against question_bank.json
-│   ├── run_cpp_tests.py        # Compiles and validates C++ submissions
-│   ├── run_sql_tests.py        # Runs SQL queries and compares result sets
-│   └── run_adversarial_tests.py  # 3500+ randomized + edge-case tests via Hypothesis
-├── web/
-│   ├── app.py                  # Flask web application
-│   ├── db.py                   # SQLite run history store
-│   ├── templates/              # Jinja2 HTML templates
-│   └── static/style.css        # Dark-theme stylesheet
-└── reports/
-    └── runs.db                 # Auto-created — stores all test run history
+```powershell
+git clone https://github.com/Bitan-2125/Coding-Assessment-Question-Bank-Validator.git
+cd Coding-Assessment-Question-Bank-Validator
 ```
 
----
+Start in the inner project directory, not its parent:
 
-## Requirements
-
-| Tool | Version | Used for |
-|---|---|---|
-| Python | 3.9+ | All validators and the web app |
-| Flask | Any recent | Web interface |
-| Hypothesis | Any recent | Adversarial tests |
-| g++ | C++17 support | C++ validator |
-| SQLite | Built into Python | SQL validator + run history |
-
----
-
-## Setup
-
-**1. Clone the repo**
-
-```bash
-git clone https://github.com/your-username/coding-assessment-bank.git
-cd coding-assessment-bank
-```
-
-**2. Create and activate a virtual environment**
-
-```bash
-# Windows
+```powershell
+cd D:\coding_assessment_bank\coding_assessment_bank
 python -m venv .venv
-.venv\Scripts\activate
-
-# macOS / Linux
-python -m venv .venv
-source .venv/bin/activate
+.\.venv\Scripts\Activate.ps1
+python -m pip install -r requirements-dev.txt
+python runner.py
 ```
 
-**3. Install dependencies**
+If PowerShell activation is unavailable, use `.\.venv\Scripts\python.exe`
+in place of `python`; no execution-policy change is needed.
+Python 3.11+ is the supported target; locally verified on Python 3.13.3.
+A C++17 `g++` compiler on PATH is required for the full verification command.
+Missing dependencies/compiler produce failures, not a false all-pass.
+On Linux/macOS activate with `source .venv/bin/activate`; the Python commands
+are otherwise the same. Other platforms have CI configuration but have not
+been exercised locally.
 
-```bash
-pip install flask hypothesis
+Generate a private runner token and start the production server:
+
+```powershell
+$env:ASSESSMENT_RUNNER_TOKEN = python -c "import secrets; print(secrets.token_urlsafe(32))"
+python serve.py
 ```
 
-> `g++` is only needed for the C++ validator. On Windows install [MinGW](https://www.mingw-w64.org/), on macOS run `xcode-select --install`, on Linux run `sudo apt install g++`.
+Open [the application](http://127.0.0.1:8080). In the same local terminal,
+`$env:ASSESSMENT_RUNNER_TOKEN` shows the value to paste into the Runner token
+field. Do not share that value in screenshots or recordings. The field is
+masked and the browser does not persist it. Without a token, browsing works
+and test execution returns 503. Stop the server with Ctrl+C.
 
----
+## Completed features
 
-## Usage
+- Question browsing, title/ID/topic search, validated category/difficulty/topic
+  filters, detail pages, examples, reference identifiers/SQL and expected cases.
+- Bank structure, unique IDs/JSON keys, count, metadata, argument signatures,
+  core input types/safety domains and reference allowlist checks. Non-finite
+  JSON values and banks above 5 MB are rejected.
+- Python validation of all bank cases and all 20 published examples. Mutable
+  input data is copied between calls. Boolean/integer confusion is rejected.
+- Valid alternative answers accepted for Two Sum and Binary Search; anagram
+  groups are compared without relying on group order, preserving duplicates.
+- SQL expectations maintained independently in the bank: sample, empty and
+  edge datasets for every SQL problem. Every case gets a fresh in-memory DB.
+- SQL read-only operation/function allowlists, two-second deadline, one-million
+  instruction budget and 10,000-row result cap; 256 KB candidate file cap.
+- C++ compiler/case deadlines and clear missing-compiler, compile, malformed
+  output and process error messages; Unicode JSON escape handling and codepoint
+  counting; 64-bit product results and overflow-safe Two Sum lookup.
+- One command runs regressions plus Python, SQL, C++ and Hypothesis suites,
+  returns a failing exit code on any failed suite and writes a JSON report.
+- Web execution accepts only bundled suites, requires a runner token, rejects
+  cross-origin/body-bearing requests and allows one active suite per process.
+- Per-case output, suite status/counts/duration/run ID, persistent SQLite history,
+  historical analytics, accessible data tables, and CSV export with formula
+  escaping for text. Infrastructure failures appear as failed runs even when
+  no individual case ran.
+- Debug disabled, trusted host configuration, 16 KB request limit, request IDs,
+  security headers, generic service errors and request/suite logs without tokens.
+- Pinned runtime/dev dependencies, a Waitress production entry point, health
+  probe, CI workflow, deployment guide, verification record and demo script.
 
-### Run the web interface
+## Tests and reports
 
-```bash
-python web/app.py
-```
-
-Open [http://127.0.0.1:5000](http://127.0.0.1:5000) in your browser.
-
-From the web UI you can:
-- Browse all 30 questions and filter by category, difficulty, or topic
-- Click any question to view the full problem statement, constraints, test cases, and complexity notes
-- Go to **Run Tests** to execute any of the three validators and see live output
-- Go to **Analytics** to view charts and download CSV exports
-
----
-
-### Run validators from the command line
-
-All commands should be run from the project root (`coding_assessment_bank/`).
-
-**Python validator** — no extra dependencies
-
-```bash
+```powershell
+python runner.py                                # all suites, required for handover
+python runner.py --report reports/check.json    # choose report destination
+python -m unittest discover -s tests -p "test_*.py" -v
 python tests/run_python_tests.py
-```
-
-Expected output:
-```
-[PASS] DSA001 case 1
-[PASS] DSA001 case 2
-...
-Result: 77 passed, 0 failed
-```
-
----
-
-**SQL validator** — uses in-memory SQLite, no extra dependencies
-
-```bash
-# Self-test: runs reference queries against themselves
 python tests/run_sql_tests.py
-
-# Validate a candidate SQL file
-python tests/run_sql_tests.py path/to/candidate_queries.sql
-```
-
-Candidate SQL file format — label each query with a comment header matching the problem ID:
-
-```sql
--- SQL001
-SELECT c.customer_id, c.name
-FROM customers c
-LEFT JOIN orders o ON o.customer_id = c.customer_id
-WHERE o.order_id IS NULL;
-
--- SQL002
-SELECT c.region, SUM(o.amount) AS revenue
-FROM customers c
-JOIN orders o ON o.customer_id = c.customer_id
-GROUP BY c.region
-HAVING SUM(o.amount) > 1000;
-```
-
----
-
-**C++ validator** — requires `g++` on PATH
-
-```bash
-# Self-test: uses cpp/reference_solutions.cpp
 python tests/run_cpp_tests.py
-
-# Validate a candidate C++ file
-python tests/run_cpp_tests.py path/to/candidate.cpp
-```
-
-The candidate file must implement the same function signatures as `cpp/reference_solutions.cpp`. The harness handles all I/O automatically — no `main()` needed in the candidate file.
-
-Supported problems: `DSA001 DSA002 DSA005 DSA007 DSA008 DSA009 DSA010 DSA012 DSA014 DSA020`
-
----
-
-**Adversarial + property-based tests**
-
-```bash
 python tests/run_adversarial_tests.py
 ```
 
-Runs 3500+ randomized and edge-case checks across core DSA solutions using [Hypothesis](https://hypothesis.readthedocs.io/). Covers empty inputs, duplicates, all-negative values, max constraints, and brute-force verified random cases.
+`reports/verification.json` contains overall success and each suite's status,
+exit code, counts, output and duration. Regression counts use unittest's run
+summary; property-test counts vary by generated examples and data. Console
+output is returned after completion, not streamed. CLI verification does not
+add runs to the production history DB. The web does.
 
----
+For trusted local candidate files only:
 
-## Analytics & CSV Export
-
-Every test run triggered from the web UI (or directly via the API) is stored in `reports/runs.db`.
-
-Go to [http://127.0.0.1:5000/analytics](http://127.0.0.1:5000/analytics) to see:
-
-- Summary cards — total questions, runs, cases passed/failed
-- Pass rate by difficulty (Easy / Medium / Hard)
-- Pass rate by category (DSA / SQL)
-- Pass rate by topic (stacked bar)
-- Test run trend over time (line chart)
-- Top failing problems table
-
-Download raw data:
-- [/export/runs.csv](http://127.0.0.1:5000/export/runs.csv) — one row per suite run
-- [/export/case-results.csv](http://127.0.0.1:5000/export/case-results.csv) — one row per individual test case result
-
----
-
-## Problem List
-
-### DSA Problems
-
-| ID | Title | Topic | Difficulty |
-|---|---|---|---|
-| DSA001 | Two Sum | Arrays / Hashing | Easy |
-| DSA002 | Valid Anagram | Strings / Hashing | Easy |
-| DSA003 | First Non-Repeating Character | Strings / Hashing | Easy |
-| DSA004 | Move Zeroes | Arrays / Two Pointers | Easy |
-| DSA005 | Binary Search | Binary Search | Easy |
-| DSA006 | Merge Sorted Arrays | Arrays / Two Pointers | Easy |
-| DSA007 | Maximum Subarray Sum | Arrays / Kadane | Medium |
-| DSA008 | Best Time to Buy and Sell Stock | Arrays / Greedy | Easy |
-| DSA009 | Longest Substring Without Repeats | Strings / Sliding Window | Medium |
-| DSA010 | Balanced Brackets | Stack | Easy |
-| DSA011 | Top K Frequent Elements | Hashing / Heap | Medium |
-| DSA012 | Product Except Self | Arrays / Prefix-Suffix | Medium |
-| DSA013 | Rotate Array Right | Arrays | Easy |
-| DSA014 | Missing Number | Arrays / Math | Easy |
-| DSA015 | Group Anagrams | Hashing / Strings | Medium |
-| DSA016 | Number of Islands | Graphs / DFS | Medium |
-| DSA017 | Shortest Path in Unweighted Graph | Graphs / BFS | Medium |
-| DSA018 | Climbing Stairs | Dynamic Programming | Easy |
-| DSA019 | Coin Change Minimum | Dynamic Programming | Medium |
-| DSA020 | Merge Overlapping Intervals | Sorting / Intervals | Medium |
-
-### SQL Problems
-
-| ID | Title | Topic | Difficulty |
-|---|---|---|---|
-| SQL001 | Customers Without Orders | Aggregation / Join | Easy |
-| SQL002 | Revenue by Region | GROUP BY / HAVING | Easy |
-| SQL003 | Second Highest Salary | Subquery | Easy |
-| SQL004 | Top Employee per Department | Window Functions | Medium |
-| SQL005 | Monthly Revenue | Date / DISTINCT | Easy |
-| SQL006 | Duplicate Emails | GROUP BY / HAVING | Easy |
-| SQL007 | Customers With At Least Three Orders | Aggregation / Join | Easy |
-| SQL008 | Running Account Balance | Window Functions | Medium |
-| SQL009 | Products Never Sold | Subquery / Join | Medium |
-| SQL010 | Daily Active Users | Date / DISTINCT | Medium |
-
----
-
-## How the C++ Harness Works
-
-The harness (`cpp/harness.cpp`) is compiled together with the candidate's solution. It reads JSON lines from stdin in the format:
-
-```json
-{"problem":"DSA001","args":[[2,7,11,15],9]}
+```powershell
+python tests/run_sql_tests.py path/to/queries.sql
+python tests/run_cpp_tests.py path/to/candidate.cpp --allow-unsafe-local-code
 ```
 
-And writes the result as JSON to stdout:
+SQL files use exact section labels `-- SQL001` through `-- SQL010`, followed by
+one query each. Duplicate/unknown sections and missing queries fail. C++ files
+must implement signatures from `cpp/reference_solutions.cpp`, including
+`vector<long long> productExceptSelf(const vector<int>&)`, without `main()`.
+C++ supports DSA001, 002, 005, 007, 008, 009, 010, 012, 014 and 020.
+There is no arbitrary Python candidate loader or web submission endpoint.
 
-```json
-[0,1]
+## Architecture
+
+```text
+question_bank.json             metadata, DSA cases/examples, SQL expected rows
+validation.py                  bank contract and shared result comparison
+runner.py                      suite allowlist, execution and JSON reports
+python/reference_solutions.py  20 Python references (preserved)
+cpp/                           10 C++ references and JSON-line harness
+sql/schema.sql                 sample schema/data
+sql/edge_fixture.sql           NULL/tie/boundary data
+sql/questions_and_solutions.md editorial SQL explanations
+web/app.py                     browsing, protected runner, CSV, health and errors
+web/db.py                      SQLite run/case history and analytics
+web/templates/, web/static/    existing Jinja interface and responsive styles
+serve.py                       loopback-only single-process Waitress server
+tests/                         validators and infrastructure regression tests
+reports/                       local DB, generated reports/logs (ignored)
 ```
 
-The Python runner (`run_cpp_tests.py`) generates these lines from `question_bank.json`, feeds them to the compiled binary, and diffs the output against the expected values.
+The bank is the executable source of truth for SQL reference queries. SQL
+fixtures list `fixture` and `expected_rows`; DSA cases list `args` and exactly
+one of `expected`/`expected_groups`. Update the bank, editorial SQL document,
+and tests together when changing a problem. Human-readable numeric constraints
+are not fully interpreted as a formal schema. Some deliberate robustness cases
+exercise empty inputs outside the nominal statement bounds.
 
----
+## Remaining limitations
 
-## Notes
+This is a reference validator for a small trusted team/demo, not a public
+sandboxed online judge. External C++ code runs with the operator's OS permissions;
+the acknowledgement flag and timeouts do not contain filesystem, network,
+memory, output-disk growth or child-process attacks. SQL restrictions also do
+not provide OS-level isolation. Never process hostile submissions on this host.
 
-- The validators test **reference implementations** — this is not a sandboxed online judge. Do not run untrusted candidate code without additional isolation.
-- SQL tests use an in-memory SQLite database seeded from `sql/schema.sql`. Queries using non-SQLite syntax (e.g. `ISNULL`, `TOP`) will fail.
-- The C++ harness currently supports 10 of the 20 DSA problems. Remaining problems can be added by extending the dispatcher in `cpp/harness.cpp`.
-- Run history persists in `reports/runs.db` across app restarts. Delete this file to reset analytics.
+The shared runner token authorizes execution only; it is not a user/session/role
+system. Read pages and exports need a private authenticated reverse proxy in a
+shared deployment. The concurrency guard covers one process. There is no durable
+job queue, cancellation, distributed locking, per-user rate limit or tenant isolation.
+A parent timeout may leave descendants until their own deadlines; it is not a
+process-tree sandbox. Use one Waitress process and trusted bundled code only.
+
+C++ covers half of the DSA bank. Its harness accepts generated trusted JSON,
+not arbitrary malformed JSON. Integer array inputs must fit C++ `int`, product
+outputs must fit signed 64-bit, and Unicode substring length counts codepoints,
+not grapheme clusters. Tests are evidence on fixtures, not proof for all inputs.
+The SQL function allowlist intentionally excludes unsupported SQLite features.
+
+SQLite is for low-volume local history. Exports are capped at the latest 1,000
+runs/5,000 cases; analytics aggregate repeated runs. Property tests contribute
+aggregate counts but do not expose individual generated examples by topic.
+Chart.js loads from a pinned external CDN URL; tables/history work offline.
+The CSP allows existing inline scripts; a stricter nonce/self-hosted asset policy
+is a future hardening task. No formal penetration, load or accessibility audit
+has been performed. There is no license supplied; confirm commercial rights
+before distribution. No external deployment has been made.
+
+See [deployment instructions](DEPLOYMENT.md), [verification evidence](VERIFICATION.md),
+[implementation plan](IMPLEMENTATION_PLAN.md) and [client demo](DEMO.md).

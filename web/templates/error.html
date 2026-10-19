@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block title %}{{ status }} | Assessment Bank{% endblock %}
+{% block content %}
+<h1>{{ status }}</h1>
+<p role="alert">{{ message }}</p>
+<p class="muted">Request ID: {{ request_id }}</p>
+<a class="btn-back" href="/">Back to questions</a>
+{% endblock %}

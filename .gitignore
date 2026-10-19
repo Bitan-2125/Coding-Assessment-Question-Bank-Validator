@@ -4,3 +4,11 @@ __pycache__/
 assessment.db
 .venv/
 reports/runs.db
+reports/*.db*
+reports/*.log
+reports/*.json
+reports/*.jpg
+reports/*.png
+.hypothesis/
+.env
+*.exe

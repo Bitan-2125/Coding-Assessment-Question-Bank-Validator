@@ -6,15 +6,20 @@ Database lives at  <project_root>/reports/runs.db
 import json
 import sqlite3
 import pathlib
+import os
+from contextlib import closing
 from datetime import datetime, timezone
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-DB_PATH = ROOT / "reports" / "runs.db"
+DB_PATH = pathlib.Path(os.environ.get('ASSESSMENT_DB', str(ROOT / 'reports' / 'runs.db')))
 
 
 def _connect() -> sqlite3.Connection:
-    DB_PATH.parent.mkdir(exist_ok=True)
-    conn = sqlite3.connect(str(DB_PATH))
+    from flask import current_app, has_app_context
+    path = pathlib.Path(current_app.config['DATABASE_PATH']) if has_app_context() else DB_PATH
+    path.parent.mkdir(parents=True, exist_ok=True)
+    conn = sqlite3.connect(str(path), timeout=10)
+    conn.execute('PRAGMA foreign_keys = ON')
     conn.row_factory = sqlite3.Row
     conn.executescript("""
         CREATE TABLE IF NOT EXISTS runs (
@@ -62,11 +67,11 @@ def _parse_python_output(output: str) -> tuple[int, int, int, list[dict]]:
 def _parse_sql_output(output: str) -> tuple[int, int, int, list[dict]]:
     cases = []
     for line in output.splitlines():
-        m = re.match(r"\[(PASS|FAIL|ERROR|SKIP)\]\s+(SQL\w+):?(.*)", line)
+        m = re.match(r"\[(PASS|FAIL|ERROR|SKIP)\]\s+(SQL\w+)(?:\s+case\s+(\d+))?:?(.*)", line)
         if m:
             status = {"PASS": "pass", "FAIL": "fail", "ERROR": "error", "SKIP": "skip"}[m.group(1)]
-            cases.append({"problem_id": m.group(2), "case_num": None,
-                          "status": status, "detail": m.group(3).strip()})
+            cases.append({"problem_id": m.group(2), "case_num": int(m.group(3)) if m.group(3) else None,
+                          "status": status, "detail": m.group(4).strip()})
     m = re.search(r"Result:\s*(\d+)\s+passed,\s*(\d+)\s+failed,\s*(\d+)\s+skipped", output)
     passed  = int(m.group(1)) if m else 0
     failed  = int(m.group(2)) if m else 0
@@ -92,6 +97,7 @@ _PARSERS = {
     "python": _parse_python_output,
     "sql":    _parse_sql_output,
     "cpp":    _parse_cpp_output,
+    "adversarial": _parse_python_output,
 }
 
 
@@ -101,23 +107,21 @@ def record_run(suite: str, output: str, exit_code: int) -> int:
     """Parse output, persist run + case rows, return run id."""
     parser = _PARSERS.get(suite)
     if parser is None:
-        return -1
+        raise ValueError('Unknown suite')
     passed, failed, skipped, cases = parser(output)
-    conn = _connect()
-    cur = conn.execute(
-        "INSERT INTO runs (suite, ran_at, passed, failed, skipped, exit_code, raw_output) "
-        "VALUES (?,?,?,?,?,?,?)",
-        (suite, datetime.now(timezone.utc).isoformat(), passed, failed, skipped, exit_code, output)
-    )
-    run_id = cur.lastrowid
-    for c in cases:
-        conn.execute(
-            "INSERT INTO case_results (run_id, problem_id, case_num, status, detail) "
-            "VALUES (?,?,?,?,?)",
-            (run_id, c["problem_id"], c["case_num"], c["status"], c["detail"])
+    with closing(_connect()) as conn, conn:
+        cur = conn.execute(
+            'INSERT INTO runs (suite, ran_at, passed, failed, skipped, exit_code, raw_output) '
+            'VALUES (?,?,?,?,?,?,?)',
+            (suite, datetime.now(timezone.utc).isoformat(), passed, failed, skipped, exit_code, output)
         )
-    conn.commit()
-    conn.close()
+        run_id = cur.lastrowid
+        for case in cases:
+            conn.execute(
+                'INSERT INTO case_results (run_id, problem_id, case_num, status, detail) '
+                'VALUES (?,?,?,?,?)',
+                (run_id, case['problem_id'], case['case_num'], case['status'], case['detail'])
+            )
     return run_id
 
 
@@ -185,6 +189,7 @@ def get_analytics(bank_problems: list[dict]) -> dict:
                SUM(CASE WHEN status IN ('fail','error') THEN 1 ELSE 0 END) AS failures
         FROM case_results
         GROUP BY problem_id
+        HAVING failures > 0
         ORDER BY failures DESC
         LIMIT 8
     """).fetchall()
@@ -192,7 +197,8 @@ def get_analytics(bank_problems: list[dict]) -> dict:
 
     # ── summary counts ───────────────────────────────────────────────────────
     totals = conn.execute(
-        "SELECT SUM(passed) AS p, SUM(failed) AS f, COUNT(*) AS runs FROM runs"
+        "SELECT SUM(passed) AS p, SUM(failed) AS f, COUNT(*) AS runs, "
+        "SUM(CASE WHEN exit_code != 0 THEN 1 ELSE 0 END) AS failed_runs FROM runs"
     ).fetchone()
 
     conn.close()
@@ -206,5 +212,6 @@ def get_analytics(bank_problems: list[dict]) -> dict:
         "total_runs":    totals["runs"] or 0,
         "total_passed":  totals["p"]    or 0,
         "total_failed":  totals["f"]    or 0,
+        "failed_runs": totals['failed_runs'] or 0,
         "bank_size":     len(bank_problems),
     }

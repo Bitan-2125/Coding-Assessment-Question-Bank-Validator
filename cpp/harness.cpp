@@ -67,7 +67,31 @@ static vector<vector<int>> parse2DIntArray(const string& raw){
 static string parseString(const string& s){
     size_t a=s.find('"'), b=s.rfind('"');
     if(a==string::npos||a==b) return "";
-    return s.substr(a+1,b-a-1);
+    string out;
+    auto appendUtf8 = [&](unsigned cp){
+        if(cp < 0x80) out += char(cp);
+        else if(cp < 0x800){ out += char(0xc0|(cp>>6)); out += char(0x80|(cp&63)); }
+        else if(cp < 0x10000){ out += char(0xe0|(cp>>12)); out += char(0x80|((cp>>6)&63)); out += char(0x80|(cp&63)); }
+        else { out += char(0xf0|(cp>>18)); out += char(0x80|((cp>>12)&63)); out += char(0x80|((cp>>6)&63)); out += char(0x80|(cp&63)); }
+    };
+    for(size_t i=a+1;i<b;++i){
+        if(s[i]!='\\'){ out += s[i]; continue; }
+        char escaped=s[++i];
+        if(escaped=='u'){
+            unsigned cp=stoul(s.substr(i+1,4),nullptr,16); i+=4;
+            if(cp>=0xd800 && cp<=0xdbff && i+6<b && s[i+1]=='\\' && s[i+2]=='u'){
+                unsigned low=stoul(s.substr(i+3,4),nullptr,16);
+                if(low>=0xdc00 && low<=0xdfff){ cp=0x10000+((cp-0xd800)<<10)+(low-0xdc00); i+=6; }
+            }
+            appendUtf8(cp);
+        } else if(escaped=='n') out+='\n';
+        else if(escaped=='t') out+='\t';
+        else if(escaped=='r') out+='\r';
+        else if(escaped=='b') out+='\b';
+        else if(escaped=='f') out+='\f';
+        else out+=escaped;
+    }
+    return out;
 }
 
 // Parse a JSON integer
@@ -79,6 +103,11 @@ static string toJson(int v){ return to_string(v); }
 static string toJson(long long v){ return to_string(v); }
 static string toJson(bool v){ return v?"true":"false"; }
 static string toJson(const vector<int>& v){
+    string s="[";
+    for(size_t i=0;i<v.size();++i){ if(i) s+=","; s+=to_string(v[i]); }
+    return s+"]";
+}
+static string toJson(const vector<long long>& v){
     string s="[";
     for(size_t i=0;i<v.size();++i){ if(i) s+=","; s+=to_string(v[i]); }
     return s+"]";
@@ -137,7 +166,7 @@ long long           maxSubarray(const vector<int>&);
 int                 maxStockProfit(const vector<int>&);
 int                 longestUniqueSubstring(const string&);
 bool                isBalanced(const string&);
-vector<int>         productExceptSelf(const vector<int>&);
+vector<long long>   productExceptSelf(const vector<int>&);
 int                 missingNumber(const vector<int>&);
 vector<vector<int>> mergeIntervals(vector<vector<int>>);
 

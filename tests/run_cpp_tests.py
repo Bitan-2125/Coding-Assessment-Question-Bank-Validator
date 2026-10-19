@@ -18,11 +18,14 @@ import pathlib
 import subprocess
 import sys
 import tempfile
+import argparse
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 HARNESS = ROOT / "cpp" / "harness.cpp"
 BANK = ROOT / "question_bank.json"
 DEFAULT_CANDIDATE = ROOT / "cpp" / "reference_solutions.cpp"
+sys.path.insert(0, str(ROOT))
+from validation import load_bank, results_equal
 
 # Problems that the harness currently supports
 SUPPORTED = {
@@ -56,29 +59,19 @@ def args_to_json_line(problem_id: str, args: list) -> str:
 
 # ── result normaliser (mirrors Python test runner logic) ────────────────────
 
-def normalise(v):
-    """Normalise a value for comparison (sort lists where order doesn't matter)."""
-    return v
-
-
-def results_equal(actual, expected, case: dict) -> bool:
-    if "expected_groups" in case:
-        norm = lambda groups: sorted(
-            (tuple(sorted(g)) for g in groups), key=repr
-        )
-        return norm(actual) == norm(case["expected_groups"])
-    return actual == expected
-
-
-# ── compile ──────────────────────────────────────────────────────────────────
-
 def compile_candidate(candidate_path: pathlib.Path, out_exe: pathlib.Path) -> tuple[bool, str]:
     cmd = [
         "g++", "-std=c++17", "-O2", "-Wall",
         str(HARNESS), str(candidate_path),
         "-o", str(out_exe),
     ]
-    result = subprocess.run(cmd, capture_output=True, text=True)
+    try:
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=30,
+                                encoding='utf-8', errors='replace')
+    except FileNotFoundError:
+        return False, 'g++ not found. Install a C++17 compiler and add it to PATH.'
+    except subprocess.TimeoutExpired:
+        return False, 'Compilation exceeded 30 seconds.'
     if result.returncode != 0:
         return False, result.stderr
     return True, ""
@@ -98,13 +91,15 @@ def run_tests(exe: pathlib.Path, problems: list) -> tuple[int, int]:
             args = case["args"]
             line = args_to_json_line(pid, args)
 
-            proc = subprocess.run(
-                [str(exe)],
-                input=line + "\n",
-                capture_output=True,
-                text=True,
-                timeout=10,
-            )
+            try:
+                proc = subprocess.run(
+                    [str(exe)], input=line + "\n", capture_output=True,
+                    text=True, encoding='utf-8', errors='replace', timeout=2,
+                )
+            except (subprocess.TimeoutExpired, OSError) as exc:
+                failed += 1
+                print(f'[ERROR] {pid} case {i}: execution failed: {exc}')
+                continue
 
             raw = proc.stdout.strip()
             if proc.returncode != 0 or not raw:
@@ -120,7 +115,7 @@ def run_tests(exe: pathlib.Path, problems: list) -> tuple[int, int]:
                 continue
 
             expected = case.get("expected")
-            if results_equal(actual, expected, case):
+            if results_equal(actual, expected, case, pid):
                 passed += 1
                 print(f"[PASS]  {pid} case {i}")
             else:
@@ -134,17 +129,28 @@ def run_tests(exe: pathlib.Path, problems: list) -> tuple[int, int]:
 # ── entry point ──────────────────────────────────────────────────────────────
 
 def main():
-    candidate = pathlib.Path(sys.argv[1]) if len(sys.argv) > 1 else DEFAULT_CANDIDATE
+    parser = argparse.ArgumentParser(description='Trusted local C++ validator; not a sandbox')
+    parser.add_argument('candidate', nargs='?', type=pathlib.Path)
+    parser.add_argument('--allow-unsafe-local-code', action='store_true',
+                        help='Acknowledge that candidate code runs with your user permissions')
+    args = parser.parse_args()
+    candidate = args.candidate.resolve() if args.candidate else DEFAULT_CANDIDATE
+    if candidate != DEFAULT_CANDIDATE and not args.allow_unsafe_local_code:
+        parser.error('External C++ code requires --allow-unsafe-local-code; use only trusted code.')
     if not candidate.exists():
         print(f"Candidate file not found: {candidate}")
         sys.exit(1)
 
-    bank = json.loads(BANK.read_text(encoding="utf-8"))
+    try:
+        bank = load_bank(BANK)
+    except ValueError as exc:
+        print(f'[ERROR] BANK: {exc}')
+        return 1
     dsa_problems = [p for p in bank["problems"] if p["category"] == "dsa"]
 
     print(f"Compiling {candidate.name} + harness.cpp ...")
     with tempfile.TemporaryDirectory() as tmp:
-        exe = pathlib.Path(tmp) / "harness_exe"
+        exe = pathlib.Path(tmp) / ('harness.exe' if os.name == 'nt' else 'harness')
         ok, err = compile_candidate(candidate, exe)
         if not ok:
             print(f"[COMPILE ERROR]\n{err}")
@@ -157,4 +163,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
